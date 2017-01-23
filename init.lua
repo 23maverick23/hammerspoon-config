@@ -3,6 +3,7 @@ IMPORTS
 --]]
 
 local grid = require "modules.grid"
+local layouts = require "modules.layouts"
 -- local pomodoro = require "modules.pomodoro"
 
 --[[
@@ -37,13 +38,13 @@ lastSSID = hs.wifi.currentNetwork()
 
 -- Defines for screen watcher
 lastNumberOfScreens = #hs.screen.allScreens()
+print('Last number of screens: ' .. lastNumberOfScreens)
 
 -- Set grid options
 hs.grid.MARGINX     = 0
 hs.grid.MARGINY     = 0
 hs.grid.ui.textSize = 50
 hs.grid.HINTS       = {
-    {'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10'},
     {'1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '0'},
     {'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',  'O',  'P'},
     {'A',  'S',  'D',  'F',  'G',  'H',  'J',  'K',  'L',  ';'},
@@ -236,6 +237,63 @@ function reloadConfig(paths)
 
     hs.reload()
 end
+
+--[[
+LAYOUT MANAGER EXAMPLE
+--]]
+
+currentLayout = null
+
+function applyLayout(layout)
+    -- local screen = hs.screen.mainScreen()
+
+    -- local layoutSize = layout.small
+    -- if layout.large and screen:currentMode().w > 1500 then
+    --     layoutSize = layout.large
+    -- end
+
+    -- currentLayout = layout
+    -- hs.layout.apply(layoutSize, function(windowTitle, layoutWindowTitle)
+    --     return string.sub(windowTitle, 1, string.len(layoutWindowTitle)) == layoutWindowTitle
+    -- end)
+    print('Layout ' .. layout.name .. ' selected')
+
+    if lastNumberOfScreens > 1 then
+        -- Multiple monitors
+        print('We have multiple monitors')
+        hs.layout.apply(layout.large, function(windowTitle, layoutWindowTitle)
+            return string.sub(windowTitle, 1, string.len(layoutWindowTitle)) == layoutWindowTitle
+        end)
+    end
+
+    -- Multiple monitors
+    print('We have a single screen')
+    hs.layout.apply(layout.small, function(windowTitle, layoutWindowTitle)
+        return string.sub(windowTitle, 1, string.len(layoutWindowTitle)) == layoutWindowTitle
+    end)
+end
+
+local chooser = hs.chooser.new(function(selection)
+    if not selection then return end
+    applyLayout(layouts.layouts[selection.uuid])
+end)
+
+-- chooser:choices(choices)
+local i = 0
+local choices = hs.fnutils.imap(layouts.layouts, function(layout)
+    i = i + 1
+    return {
+        uuid=i,
+        text=layout.name,
+        subText=layout.description
+    }
+end)
+chooser:choices(choices)
+chooser:searchSubText(true)
+chooser:rows(#choices)
+chooser:width(20)
+
+hs.hotkey.bind(mashshift, '0', function() chooser:show() end)
 
 -- Create and start our callbacks
 -- start app launch watcher
