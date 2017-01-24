@@ -4,6 +4,7 @@ IMPORTS
 
 local grid = require "modules.grid"
 local layouts = require "modules.layouts"
+local apps = require "modules.apps"
 -- local pomodoro = require "modules.pomodoro"
 
 --[[
@@ -62,21 +63,6 @@ else
     hs.grid.GRIDWIDTH = 9
     hs.grid.GRIDHEIGHT = 6
 end
-
---[[
-WINDOW LAYOUTS
---]]
-
--- Define window layouts
---   Format reminder:
---     {"App name", "Window name", "Display Name", "unitrect", "framerect", "fullframerect"},
-internal_display = {
-    {"Google Chrome",     nil,          display_home, hs.layout.maximized, nil, nil},
-}
-
-dual_display = {
-    {"Google Chrome",     nil,          display_monitor, hs.geometry.unitrect(0, 0.5, 0.5, 0.5), nil, nil},
-}
 
 --[[
 KEYBINDINGS
@@ -140,9 +126,11 @@ hs.hotkey.bind(mash,      'P', function() hs.grid.pushWindowPrevScreen() end)
 -- hs.hotkey.bind(mash,      '0', pomodoro.pom_disable)
 -- hs.hotkey.bind(mashshift, '0', pomodoro.pom_reset_work)
 
---[[
-WINDOW METHODS
---]]
+-- Apps launcher
+hs.hotkey.bind(mashshift, '9', function() apps.launcher:show() end)
+
+-- Layouts chooser
+hs.hotkey.bind(mashshift, '0', function() layouts.chooser:show() end)
 
 -- Defines for window maximize toggler
 frameCache = {}
@@ -239,61 +227,8 @@ function reloadConfig(paths)
 end
 
 --[[
-LAYOUT MANAGER EXAMPLE
+WATCHERS
 --]]
-
-currentLayout = null
-
-function applyLayout(layout)
-    -- local screen = hs.screen.mainScreen()
-
-    -- local layoutSize = layout.small
-    -- if layout.large and screen:currentMode().w > 1500 then
-    --     layoutSize = layout.large
-    -- end
-
-    -- currentLayout = layout
-    -- hs.layout.apply(layoutSize, function(windowTitle, layoutWindowTitle)
-    --     return string.sub(windowTitle, 1, string.len(layoutWindowTitle)) == layoutWindowTitle
-    -- end)
-    print('Layout ' .. layout.name .. ' selected')
-
-    if lastNumberOfScreens > 1 then
-        -- Multiple monitors
-        print('We have multiple monitors')
-        hs.layout.apply(layout.large, function(windowTitle, layoutWindowTitle)
-            return string.sub(windowTitle, 1, string.len(layoutWindowTitle)) == layoutWindowTitle
-        end)
-    end
-
-    -- Multiple monitors
-    print('We have a single screen')
-    hs.layout.apply(layout.small, function(windowTitle, layoutWindowTitle)
-        return string.sub(windowTitle, 1, string.len(layoutWindowTitle)) == layoutWindowTitle
-    end)
-end
-
-local chooser = hs.chooser.new(function(selection)
-    if not selection then return end
-    applyLayout(layouts.layouts[selection.uuid])
-end)
-
--- chooser:choices(choices)
-local i = 0
-local choices = hs.fnutils.imap(layouts.layouts, function(layout)
-    i = i + 1
-    return {
-        uuid=i,
-        text=layout.name,
-        subText=layout.description
-    }
-end)
-chooser:choices(choices)
-chooser:searchSubText(true)
-chooser:rows(#choices)
-chooser:width(20)
-
-hs.hotkey.bind(mashshift, '0', function() chooser:show() end)
 
 -- Create and start our callbacks
 -- start app launch watcher

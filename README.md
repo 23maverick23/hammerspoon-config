@@ -15,7 +15,9 @@ $ ln -s path/to/hammerspoon-config/ ~/.hammerspoon
 
 ## Included modules
 
-* [Grid](modules/grid.lua) - 9 column x 9 row grid with 0 margins
+* [Grid](modules/grid.lua)
+* [Layouts](modules/layouts.lua)
+* [Apps](modules/apps.lua)
 
 ## Keybindings
 
@@ -62,6 +64,8 @@ $ ln -s path/to/hammerspoon-config/ ~/.hammerspoon
 | mashshift + <kbd>Y</kbd>  | Snaps the focused window to bottom 66%.                      |
 | mash + <kbd>N</kbd>       | Pushes the current window to the next monitor.               |
 | mash + <kbd>P</kbd>       | Pushes the current window to the previous monitor.           |
+| mashshift + <kbd>9</kbd>  | Opens a chooser for opening/focusing applications.           |
+| mashshift + <kbd>0</kbd>  | Opens a chooser for setting the current screen layout.       |
 
 ### Karabiner
 
