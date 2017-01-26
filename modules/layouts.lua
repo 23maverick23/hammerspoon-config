@@ -27,7 +27,7 @@ layouts.layouts = {
         },
         large={
             {"Google Chrome", nil, display_monitor, {0, 0, 2/3, 1},        nil, nil},
-            {"Sublime Text",  nil, display_monitor, {2/9, 1/3, 5/9, 2/3},  nil, nil}
+            {"Sublime Text",  nil, display_monitor, {1/3, 1/3, 1/3, 2/3},  nil, nil}
         }
     },
 }

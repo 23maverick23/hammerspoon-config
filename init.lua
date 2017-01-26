@@ -58,10 +58,10 @@ hs.window.animationDuration = 0
 -- Defines for window grid
 if (hostname == "Bessie") then
     hs.grid.GRIDWIDTH = 6
-    hs.grid.GRIDHEIGHT = 4
-else
-    hs.grid.GRIDWIDTH = 9
     hs.grid.GRIDHEIGHT = 6
+else
+    hs.grid.GRIDWIDTH = 12
+    hs.grid.GRIDHEIGHT = 12
 end
 
 --[[
@@ -195,15 +195,22 @@ end
 function screensChangedCallback()
     print("screensChangedCallback")
     newNumberOfScreens = #hs.screen.allScreens()
-
+    local notificationMessage = ''
     -- FIXME: This is awful if we swap primary screen to the external display,
     -- all the windows swap around, pointlessly.
     if lastNumberOfScreens ~= newNumberOfScreens then
         if newNumberOfScreens == 1 then
             hs.layout.apply(internal_display)
+            notificationMessage='Internal display layout applied'
         elseif newNumberOfScreens == 2 then
             hs.layout.apply(dual_display)
+            notificationMessage='Internal display layout applied'
         end
+
+        hs.notify.new({
+            title='Screens Changed',
+            informativeText=notificationMessage
+        }):send()
     end
 
     lastNumberOfScreens = newNumberOfScreens
